@@ -468,7 +468,7 @@ where
   }
 
   let mut next = f.layer_first_child_index;
-  let mut layer_number = 1;
+  let mut layer_number = 1 + get_max_layer_number(v, index, root, root_layer_base_name)?;
 
   while next != 0 {
     let ci = match find_layer_index(v, next) {
@@ -491,6 +491,44 @@ where
   }
 
   return Ok(());
+}
+
+/// Finds the maximum value of the number of layers in the folder.
+fn get_max_layer_number(
+  v: &Vec<Box<ClipLayer>>,
+  index: usize,
+  root: bool,
+  root_layer_base_name: &str,
+) -> Result<u64, ClipError> {
+  let f = &v[index];
+
+  let mut next = f.layer_first_child_index;
+  let mut layer_number: u64 = 0;
+
+  let base_name = if root {
+    root_layer_base_name
+  } else {
+    &f.layer_name
+  };
+  if base_name.len() == 0 {
+    return Ok(0);
+  }
+  while next != 0 {
+    let ci = match find_layer_index(v, next) {
+      Some(x) => x,
+      None => return Err(ClipError::UnknownFileStruct),
+    };
+    let c = &v[ci];
+    next = c.layer_next_index;
+    if c.layer_folder == 0 && c.layer_name.starts_with(base_name) {
+      let substr = c.layer_name[base_name.len()..].trim();
+      layer_number = match substr.parse::<u64>() {
+        Ok(x) => std::cmp::max(x, layer_number),
+        Err(_) => continue,
+      };
+    }
+  }
+  return Ok(layer_number);
 }
 
 /// Brief
