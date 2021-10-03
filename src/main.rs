@@ -11,6 +11,11 @@ fn main() {
         std::process::exit(1);
     }
 
+    if args[1] == "-v" {
+        println!("v0.1.0");
+        return;
+    }
+
     let mut input_buf = PathBuf::from(&args[1]);
     let output = Path::new(&args[if args.len() == 2 { 1 } else { 2 }]);
 

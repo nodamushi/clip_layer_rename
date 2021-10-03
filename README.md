@@ -19,6 +19,7 @@ Clip Studio Paintのclip形式ファイルを操作し、「レイヤー 番号�
 cargo build --release
 ```
 
+`target/release`フォルダに実行ファイル `renamelayer` が出力されます。
 
 # How to use
 
@@ -26,10 +27,11 @@ cargo build --release
 renamelayer Input [Output]
 ```
 
-- Input: 入力 clip ファイル
-- Output: 出力 clip ファイル（省略可）
+- `Input`: 入力 clip ファイル
+- `Output`: 出力 clip ファイル（省略可）
 
 Outputを省略した場合は、Inputファイルを上書きします。
 上書きする際に、元のファイルは`bk.clip`という拡張子でバックアップします。
 同名のバックアップファイルがあった場合は上書きします。
 
+単純にファイルをDrag & Dropでも動きます。
