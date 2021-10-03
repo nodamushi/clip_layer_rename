@@ -189,7 +189,7 @@ fn find_sqlite<P: AsRef<Path>>(path: P) -> Result<Option<(u64, usize)>, ClipErro
   'outer: loop {
     let (pos, data) = match buf.next()? {
       Some(x) => x,
-      None => return Ok(None)
+      None => return Ok(None),
     };
     for i in 0..SQL_CHANK_LEN {
       if data[i] != SQL_CHANK[i] {
@@ -203,9 +203,7 @@ fn find_sqlite<P: AsRef<Path>>(path: P) -> Result<Option<(u64, usize)>, ClipErro
       }
     }
 
-    let sqlsize_buf: [u8; 8] = data[SQL_CHANK_LEN..SQL_CHANK_LEN + 8]
-        .try_into()
-        .unwrap();
+    let sqlsize_buf: [u8; 8] = data[SQL_CHANK_LEN..SQL_CHANK_LEN + 8].try_into().unwrap();
     let sqlsize = u64::from_be_bytes(sqlsize_buf);
     return Ok(Some((sqlsize, pos + SQL_CHANK_LEN + 8)));
   }
@@ -488,7 +486,7 @@ where
         format!("{} {}", f.layer_name, layer_number)
       };
       layer_number += 1;
-      rename_layer(conn, c.pw_id, &name)?;
+      rename_layer(conn, c.main_id, &name)?;
     }
   }
 
@@ -500,12 +498,12 @@ where
 /// update layer name
 ///
 /// * `conn` : sqlite3
-/// * `pw_id` : layer primary key
+/// * `main_id` : layer main_id
 /// * `rename` : new layer name
-fn rename_layer(conn: &rusqlite::Connection, pw_id: u64, rename: &str) -> Result<(), ClipError> {
+fn rename_layer(conn: &rusqlite::Connection, main_id: u64, rename: &str) -> Result<(), ClipError> {
   if let Err(_) = conn.execute(
-    "UPDATE Layer SET LayerName = $1 WHERE _PW_ID = $2",
-    rusqlite::params![rename, pw_id],
+    "UPDATE Layer SET LayerName = $1 WHERE MainId = $2",
+    rusqlite::params![rename, main_id],
   ) {
     return Err(ClipError::SQLError);
   }
